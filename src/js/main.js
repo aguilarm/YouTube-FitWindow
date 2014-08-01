@@ -1,7 +1,7 @@
 //Set up variables
 active = 0;
-smallIdle = chrome.extension.getURL('smallIdle.png');
-largeIdle = chrome.extension.getURL('largeIdle.png');
+smallIdle = chrome.extension.getURL('img/smallIdle.png');
+largeIdle = chrome.extension.getURL('img/largeIdle.png');
 
 //Load the button, add some style to it and create click event listener	
 $(function() {
@@ -15,8 +15,6 @@ $(function() {
 		"width": "30px",
 		"height": "27px",
 	});
-	console.log('Button added');
-	console.log(active);
 	
 	$('#ytResize').click(resizePlayer);
 	
@@ -67,5 +65,6 @@ function resizePlayer () {
 		active=0;
 	}
 };
+
 
 
