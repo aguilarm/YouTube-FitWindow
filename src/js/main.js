@@ -16,8 +16,19 @@ $(function() {
 		"height": "27px",
 	});
 	
+	//Debug
+	//console.log("Button made, active = " + active);
+	
 	$('#ytResize').click(resizePlayer);
 	
+	//Trying to solve the problem of user running resizePlayer so it's large, then clicking a related video without running resizePlayer again
+	//This causes the player to reload large without running this onload, I think, but does not properly move the related videos section, so its
+	//stuck under the video.  Does not work yet, I'm guessing the problem is because the next page content is mostly loaded with ajax or something,
+	//so I've got a bit of reading to do to figure out how to handle this.
+	//if ($('#player').css("margin")=='0px'){
+	//	$('#watch7-sidebar').attr("style", "margin:0!important; top:0");
+	//	console.log("Trying to fix related videos");
+	//}
 });
 
 //If the button has been pressed and the user resizes their window, update video player size
@@ -50,7 +61,9 @@ function resizePlayer () {
 		//Change ytResize button
 		$('#ytResize').css("background-image", "url(" + smallIdle + ")");
 		//Set active
-		active = 1;	
+		active = 1;
+		//Debug
+		//console.log("After button pressed and active is 0 found; " + active);
 	} else {
 		//Remove the edits
 		$('#player-api').removeAttr("style");
@@ -63,8 +76,7 @@ function resizePlayer () {
 		$('#ytResize').css("background", "no-repeat url(" + largeIdle + ") 0px 1px");
 		//Remove active
 		active=0;
+		//Debug
+		//console.log("Button press with active=1, now =" + active);
 	}
 };
-
-
-

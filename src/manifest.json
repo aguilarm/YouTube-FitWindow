@@ -3,7 +3,7 @@
 	"name": "YouTube FitWindow",
 	"version": "1.0",
 	"description": "Adds a button to automatically resize youtube videos to fit the window, but leaves youtube's search bar on top.",
-	"web_accessible_resources": ["/img/smallIdle.png", "/img/largeIdle.png"],
+	"web_accessible_resources": ["img/smallIdle.png", "img/largeIdle.png"],
 	"icons": { 	"48": "/img/48.png",
 				"128": "/img/128.png" },
 				
@@ -11,7 +11,7 @@
 		{
 			"matches": ["https://www.youtube.com/watch?v=*"],
 			"js": ["js/jquery-2.1.0.min.js", "js/main.js"],
-			"run-at": "document_end"
+			"run-at": "document_idle"
 		}
 	]
 }
