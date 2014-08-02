@@ -17,4 +17,3 @@ To use, go to a youtube video (right now the extension only works on videos on y
 
 - Add settings page so user can turn on/off searchbar or make FitWin the default size
 - Force 1080 or 720p
-- Known Bug: If the user runs resizePlayer so it's large, then clicks a related video without running resizePlayer again  (minimizing video), the player to reloads large without running the onload script and everything except the related video section loads correctly.  Related videos load under the video, I'm pretty sure this is because YouTube uses a lot of ajax/xhr to load new videos so I need to try a few more things to fix it.

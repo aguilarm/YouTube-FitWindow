@@ -21,14 +21,15 @@ $(function() {
 	
 	$('#ytResize').click(resizePlayer);
 	
-	//Trying to solve the problem of user running resizePlayer so it's large, then clicking a related video without running resizePlayer again
-	//This causes the player to reload large without running this onload, I think, but does not properly move the related videos section, so its
-	//stuck under the video.  Does not work yet, I'm guessing the problem is because the next page content is mostly loaded with ajax or something,
-	//so I've got a bit of reading to do to figure out how to handle this.
-	//if ($('#player').css("margin")=='0px'){
-	//	$('#watch7-sidebar').attr("style", "margin:0!important; top:0");
-	//	console.log("Trying to fix related videos");
-	//}
+	//Since new videos are loaded without a full page reload, this is to stop the related videos column from breaking
+	var correctRelated = setInterval(function(){
+		if ($('#player').css("margin")=='0px'){
+			$('#watch7-sidebar').attr("style", "margin:0!important; top:0");
+			console.log("Trying to fix related videos");
+		} else {
+			console.log("Found no issue with related videos");
+		}
+	}, 1000);
 });
 
 //If the button has been pressed and the user resizes their window, update video player size
