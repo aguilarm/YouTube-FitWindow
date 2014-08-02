@@ -3,35 +3,42 @@ active = 0;
 smallIdle = chrome.extension.getURL('img/smallIdle.png');
 largeIdle = chrome.extension.getURL('img/largeIdle.png');
 
-//Load the button, add some style to it and create click event listener	
-$(function() {
-	
-	var button = '<div class="ytp-button" id="ytResize" role="button" aria-label="youtubeResize" tabindex="6850"></div>';
-	$('.ytp-button-fullscreen-enter').after(button);
-	$('#ytResize').css({
-		"float": "right",
-		"background": "no-repeat url(" + largeIdle + ") 0px 1px",
-		"background-size": "auto",
-		"width": "30px",
-		"height": "27px",
-	});
-	
-	//Debug
-	//console.log("Button made, active = " + active);
-	
-	$('#ytResize').click(resizePlayer);
-	
-	//Since new videos are loaded without a full page reload, this is to stop the related videos column from breaking
-	var correctRelated = setInterval(function(){
-		if ($('#player').css("margin")=='0px'){
-			$('#watch7-sidebar').attr("style", "margin:0!important; top:0");
-			console.log("Trying to fix related videos");
-		} else {
-			console.log("Found no issue with related videos");
+
+//Load the button, and to overcome the xhr/ajax loads of youtube check for the button periodically
+var button = '<div class="ytp-button" id="ytResize" role="button" aria-label="youtubeResize" tabindex="6850"></div>';
+var buttonOn = 0;
+var loadButton = setInterval(function(){
+	if (buttonOn == 0){
+		$('.ytp-button-fullscreen-enter').after(button);
+		$('#ytResize').css({
+			"float": "right",
+			"background": "no-repeat url(" + largeIdle + ") 0px 1px",
+			"background-size": "auto",
+			"width": "30px",
+			"height": "27px",
+		});
+		//Add event listener to the button
+		$('#ytResize').click(resizePlayer);
+		buttonOn=1;
+		//Debug
+		//console.log("buttonOn = " + buttonOn);
 		}
 	}, 1000);
-});
+	
 
+	
+//Since new videos are loaded without a full page reload, this is to stop the related videos column from breaking
+var correctRelated = setInterval(function(){
+	if ($('#player').css("margin")=='0px'){
+		$('#watch7-sidebar').attr("style", "margin:0!important; top:0");
+		//Debug
+		//console.log("Trying to fix related videos");
+	} else {
+		//Debug
+		//console.log("Found no issue with related videos");
+	}
+}, 1000);
+	
 //If the button has been pressed and the user resizes their window, update video player size
 $(window).resize(function(){
 	if (active === 1){
