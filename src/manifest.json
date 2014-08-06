@@ -6,12 +6,18 @@
 	"web_accessible_resources": ["img/smallIdle.png", "img/largeIdle.png"],
 	"icons": { 	"48": "/img/48.png",
 				"128": "/img/128.png" },
-				
+	"background": {
+		"persistent":true,
+		"page": "background.html"
+	},
 	"content_scripts": [
 		{
-			"matches": ["*://www.youtube.com/*"],
-			"js": ["js/jquery-2.1.0.min.js", "js/main.js"],
-			"run-at": "document_idle"
+			"matches": ["*://*.youtube.com/*"],
+			"js": ["js/jquery-2.1.0.min.js", "js/main.js"]
 		}
+	],
+	"permissions":[
+		"tabs",
+		"http://www.youtube.com/*"
 	]
 }
