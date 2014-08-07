@@ -34,13 +34,7 @@ function addButton(){
 function loadButton () {
 	console.log('loading button');
 	$('.ytp-button-fullscreen-enter').after(button);
-	$('#ytResize').css({
-		"float": "right",
-		"background": "no-repeat url(" + largeIdle + ") 0px 1px",
-		"background-size": "auto",
-		"width": "30px",
-		"height": "27px",
-	});
+	$('#ytResize').css("background", "no-repeat url(" + largeIdle + ") 0px 1px");
 	buttonOn=1;
 	$('#ytResize').click(resizePlayer);
 }
@@ -65,9 +59,16 @@ $(window).resize(function(){
 		winH = $window.height();
 		winW = $window.width();
 		$('#player-api').height(winH-50).width(winW);
+		$('#movie_player > div.html5-video-container > div.html5-video-content').height(winH - 50).width(winW - 50);
 	}
 });
 
+//Attempt to override the resize of bar
+setInterval(function(){
+	if (active == 1){
+	$('#movie_player > div.html5-video-controls > div.ytp-progress-bar-container > div.html5-progress-bar.html5-stop-propagation.ytp-force-transform.red').width(winW);
+	}
+},1);
 //The actual resize function
 function resizePlayer () {
 	
@@ -78,6 +79,11 @@ function resizePlayer () {
 	if (active == 0){
 		//Edit CSS so player fits screen properly
 		$('#player-api').height(winH - 50).width(winW);
+		//Also resize the video itself, sometimes does not stretch
+		$('video.html5-main-video').height(winH-50).width(winW);
+		$('#movie_player > div.html5-video-container > div.html5-video-content').width(winW);
+		console.log('WE NEED TO RESIZE BETTER');
+		
 		$('#player-api').css("margin", 0);
 		$('#player').css("margin", 0);
 		//Had to use 'attr' instead of 'css' for !important to work
@@ -94,6 +100,7 @@ function resizePlayer () {
 	} else {
 		//Remove the edits
 		$('#player-api').removeAttr("style");
+		$('video.html5-main-video').removeAttr("style");
 		$('#player').removeAttr("style");
 		$('#watch7-sidebar').removeAttr("style");
 		//Show the Theatre Mode button again

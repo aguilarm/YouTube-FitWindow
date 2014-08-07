@@ -1,0 +1,11 @@
+#ytResize {
+	display: block;
+	float: right;
+	background-size: auto;
+	width: 30px;
+	height: 27px;
+}
+
+#ytResize:hover {
+	background-position: 0px 2px !important;
+}

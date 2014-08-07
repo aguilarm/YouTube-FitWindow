@@ -18,3 +18,4 @@ To use, go to a youtube video (right now the extension only works on videos on y
 - Add settings page so user can turn on/off searchbar or make FitWin the default size
 - Force 1080 or 720p
 - Add hover to make the button behave like other buttons on mouseover.
+- Very rarely, youtube uses a flash player instead of HTML5 so this does not work, need to address that
