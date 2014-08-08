@@ -63,12 +63,6 @@ $(window).resize(function(){
 	}
 });
 
-//Attempt to override the resize of bar
-setInterval(function(){
-	if (active == 1){
-	$('#movie_player > div.html5-video-controls > div.ytp-progress-bar-container > div.html5-progress-bar.html5-stop-propagation.ytp-force-transform.red').width(winW);
-	}
-},1);
 //The actual resize function
 function resizePlayer () {
 	
@@ -79,14 +73,14 @@ function resizePlayer () {
 	if (active == 0){
 		//Edit CSS so player fits screen properly
 		$('#player-api').height(winH - 50).width(winW);
+		$('#player').height(winH - 50).width(winW);
 		//Also resize the video itself, sometimes does not stretch
 		$('video.html5-main-video').height(winH-50).width(winW);
-		$('#movie_player > div.html5-video-container > div.html5-video-content').width(winW);
+		//$('#movie_player > div.html5-video-container > div.html5-video-content').width(winW);
 		console.log('WE NEED TO RESIZE BETTER');
-		
+		//$('#movie_player').width(winW);
 		$('#player-api').css("margin", 0);
 		$('#player').css("margin", 0);
-		//Had to use 'attr' instead of 'css' for !important to work
 		$('#watch7-sidebar').attr("style", "margin:0!important; top:0");
 		//Hide the Theatre Mode button
 		$('.ytp-size-toggle-small').hide();
@@ -99,6 +93,7 @@ function resizePlayer () {
 		//console.log("After button pressed and active is 0 found; " + active);
 	} else {
 		//Remove the edits
+		$('#player').removeAttr("style");
 		$('#player-api').removeAttr("style");
 		$('video.html5-main-video').removeAttr("style");
 		$('#player').removeAttr("style");
