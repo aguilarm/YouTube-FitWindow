@@ -9,3 +9,11 @@
 #ytResize:hover {
 	background-position: 0px 2px !important;
 }
+
+#ytR .player-width {
+	width:900px
+}
+
+#ytR .player-height {
+	height:900px
+}

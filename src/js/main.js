@@ -6,11 +6,11 @@ var active = 0;
 	button = '<div class="ytp-button" id="ytResize" role="button" aria-label="youtubeResize" tabindex="6850"></div>';
 	buttonOn = 0;
 
+//----------------------------------------
 //this detects when a url changes without page reload
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	addButton();
 	correctRelated();
-	console.log('URL CHANGED (WITHOUT RELOAD?): ' + request.data.url);
 });
 
 //----------------------------------------
@@ -18,21 +18,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 function addButton(){
 	//check if the button is added, and if so end
 	if (buttonOn == 1) {
-		console.log('buttonOn was true, didnt loadButton');
 		return;
 	}
 	//if the button is not added, run loadButton and create it
 	if (buttonOn == 0){
-		console.log('sending loadButton call');
 		loadButton();
 	}
 }
 
-
 //---------------------------------------
 //Create the button and add click event
 function loadButton () {
-	console.log('loading button');
 	$('.ytp-button-fullscreen-enter').after(button);
 	$('#ytResize').css("background", "no-repeat url(" + largeIdle + ") 0px 1px");
 	buttonOn=1;
@@ -42,7 +38,7 @@ function loadButton () {
 //Since new videos are loaded without a full page reload, this is to stop the related videos column from breaking
 function correctRelated () {
 	if ($('#player').css("margin")=='0px'){
-		$('#watch7-sidebar').attr("style", "margin:0!important; top:0");
+		$('#watch7-sidebar').attr("style", "margin-top:10px; top:0;position:absolute");
 		//Debug
 		//console.log("Trying to fix related videos");
 	} else {
@@ -50,11 +46,12 @@ function correctRelated () {
 		//console.log("Found no issue with related videos");
 	}
 }
-	
-
+//--------------------------------------
 //If the button has been pressed and the user resizes their window, update video player size
+//TODO Not working too well after youtube update
 $(window).resize(function(){
 	if (active === 1){
+		//update window size
 		$window = $(window);
 		winH = $window.height();
 		winW = $window.width();
@@ -62,26 +59,46 @@ $(window).resize(function(){
 		$('#movie_player > div.html5-video-container > div.html5-video-content').height(winH - 50).width(winW - 50);
 	}
 });
+//---------------------------------------
+//This code adds css to the head so I can manipulate CSS classes reasonably well, rather than using inline styles
+//more discussion and original snippet at http://stackoverflow.com/questions/7125453/modifying-css-class-property-values-on-the-fly-with-javascript-jquery
+function setStyle(cssText) {
+    var sheet = document.createElement('style');
+    sheet.type = 'text/css';
+    /* Optional */ window.customSheet = sheet;
+    (document.head || document.getElementsByTagName('head')[0]).appendChild(sheet);
+    return (setStyle = function(cssText, node) {
+        if(!node || node.parentNode !== sheet)
+            return sheet.appendChild(document.createTextNode(cssText));
+        node.nodeValue = cssText;
+        return node;
+    })(cssText);
+};
 
+//---------------------------------------
 //The actual resize function
 function resizePlayer () {
-	
+	//update window size
+	var progress, pH, pW;
 	$window = $(window);
 	winH = $window.height();
 	winW = $window.width();
+	//adjust for youtube header
+	winHhead = winH - 50;
 	
 	if (active == 0){
+		//Make the progress bar stuff centered, a good enough way to solve the inabilty to scale the whole bar
+		//TODO Scale the whole bar, haha.  Problem is that it's being set with inline styles from a function and I can't
+		//quite navigate youtube's rather cryptic variables quite well enough to find where they grab the width value
+		setStyle('.ytp-progress-bar-container { width:854px;margin:auto;}',progress);
 		//Edit CSS so player fits screen properly
-		$('#player-api').height(winH - 50).width(winW);
-		$('#player').height(winH - 50).width(winW);
+		$('#player-api').height(winHhead).width(winW);
+		$('#player').height(winHhead).width(winW);
 		//Also resize the video itself, sometimes does not stretch
 		$('video.html5-main-video').height(winH-50).width(winW);
-		//$('#movie_player > div.html5-video-container > div.html5-video-content').width(winW);
-		console.log('WE NEED TO RESIZE BETTER');
-		//$('#movie_player').width(winW);
 		$('#player-api').css("margin", 0);
 		$('#player').css("margin", 0);
-		$('#watch7-sidebar').attr("style", "margin:0!important; top:0");
+		$('#watch7-sidebar').attr("style", "margin-top:10px; top:0;position:absolute");
 		//Hide the Theatre Mode button
 		$('.ytp-size-toggle-small').hide();
 		$('.ytp-size-toggle-large').hide();
@@ -92,6 +109,8 @@ function resizePlayer () {
 		//Debug
 		//console.log("After button pressed and active is 0 found; " + active);
 	} else {
+		//clear the setStyle styles
+		setStyle('', progress);
 		//Remove the edits
 		$('#player').removeAttr("style");
 		$('#player-api').removeAttr("style");
