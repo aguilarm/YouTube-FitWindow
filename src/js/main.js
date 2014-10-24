@@ -80,6 +80,7 @@ function updatePlayerSize() {
 	if (resizeButtonState === 1) {
 		//update window size
 		var $window = $(window),
+            vidH,
             winH = $window.height(),
             winW = $window.width(),
             winHadjusted;
@@ -90,12 +91,14 @@ function updatePlayerSize() {
             winHadjusted = winH - 65;
         }
         
+        vidH = winHadjusted - 27;
+        
         $('#player-api').height(winHadjusted).width(winW);
 		$('#player').height(winHadjusted).width(winW);
 		//Also resize the video itself, sometimes does not stretch
-		$('video.html5-main-video').height(winHadjusted).width(winW);
 		$('#player-api').height(winHadjusted).width(winW);
-		$('#movie_player > div.html5-video-container > div.html5-video-content').height(winHadjusted).width(winW);
+        $('video.html5-main-video').height(vidH).width(winW);
+		$('#movie_player > div.html5-video-container > div.html5-video-content').height(vidH).width(winW);
 	}
 }
 
