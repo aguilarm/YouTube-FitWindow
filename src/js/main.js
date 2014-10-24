@@ -3,11 +3,7 @@ var ytrResizeButtonSm = chrome.extension.getURL('img/resizeButtonSm.png'),
 	ytrResizeButtonLg = chrome.extension.getURL('img/resizeButtonLg.png'),
 	ytrResizeButtonState = 0,
     ytrSearchBarState = 1,
-    resizeButtonState = 0,
-    searchBarState = 1,
-	winH,
-	winW,
-	$window;
+    resizeButtonState = 0;
 
 //---------------------------------------
 //Create the button and add click event
@@ -22,33 +18,32 @@ function loadResizeButton() {
 }
 
 function loadSearchBarButton() {
-        var exists = document.getElementById('ytrSearchBarButton');
-        console.log(exists);
-        if (exists) { return }
-        console.log('creating searchbarbutton');
-        var ytrSearchBarButtonSVG = chrome.extension.getURL('img/searchBarButton.svg');
-        var ytrSearchBarButton = '<div id="ytrSearchBarButton"><img src="' + ytrSearchBarButtonSVG + '"></div>';
-        $('#masthead-positioner-height-offset').after(ytrSearchBarButton);
-        $('#ytrSearchBarButton').click(function () {
-            console.log('clicked!');
-            if (ytrSearchBarState === 1) {
-                $('#yt-masthead-container').css('display', 'none');
-                $('#masthead-positioner').css('display', 'none');
-                $('#masthead-positioner-height-offset').css('height', '0px');
-                $('#player').css('margin-top', '0px');
-                $('#ytrSearchBarButton img').addClass('ytrRotate');
-                ytrSearchBarState = 0;
-                updatePlayerSize();
-            } else {
-                $('#yt-masthead-container').css("display", "block");
-                $('#masthead-positioner').css('display', 'block');
-                $('#masthead-positioner-height-offset').css("height", "50px");
-                $('#player').css("margin-top", "10");
-                $('#ytrSearchBarButton img').removeClass('ytrRotate');
-                ytrSearchBarState = 1;
-                updatePlayerSize();
-            }
-        });
+    var exists = document.getElementById('ytrSearchBarButton'),
+        ytrSearchBarButtonSVG = chrome.extension.getURL('img/searchBarButton.svg'),
+        ytrSearchBarButton = '<div id="ytrSearchBarButton"><img src="' + ytrSearchBarButtonSVG + '"></div>';
+    
+    if (exists) { return; }
+    
+    $('#masthead-positioner-height-offset').after(ytrSearchBarButton);
+    $('#ytrSearchBarButton').click(function () {
+        if (ytrSearchBarState === 1) {
+            $('#yt-masthead-container').css('display', 'none');
+            $('#masthead-positioner').css('display', 'none');
+            $('#masthead-positioner-height-offset').css('height', '0px');
+            $('#player').css('margin-top', '0px');
+            $('#ytrSearchBarButton img').addClass('ytrRotate');
+            ytrSearchBarState = 0;
+            updatePlayerSize();
+        } else {
+            $('#yt-masthead-container').css("display", "block");
+            $('#masthead-positioner').css('display', 'block');
+            $('#masthead-positioner-height-offset').css("height", "50px");
+            $('#player').css("margin-top", "10");
+            $('#ytrSearchBarButton img').removeClass('ytrRotate');
+            ytrSearchBarState = 1;
+            updatePlayerSize();
+        }
+    });
 }
 
 //----------------------------------------
@@ -79,27 +74,22 @@ function correctRelated() {
 	}
 }
 
-//--------------------------------------
-//If the button has been pressed and the user resizes their window, update video player size
-//TODO Not working too well after youtube update
-$(window).resize(function () {updatePlayerSize()});
-
 //---------------------------------------
 //Function to update player size to adjust for changes
 function updatePlayerSize() {
-    console.log('updating player');
 	if (resizeButtonState === 1) {
 		//update window size
-		$window = $(window);
-		winH = $window.height();
-		winW = $window.width();
-        var winHadjusted;
+		var $window = $(window),
+            winH = $window.height(),
+            winW = $window.width(),
+            winHadjusted;
+        
         if (ytrSearchBarState === 0) {
-		  winHadjusted = winH - 15;
+            winHadjusted = winH - 15;
         } else {
             winHadjusted = winH - 65;
         }
-        console.log(winHadjusted);
+        
         $('#player-api').height(winHadjusted).width(winW);
 		$('#player').height(winHadjusted).width(winW);
 		//Also resize the video itself, sometimes does not stretch
@@ -108,6 +98,9 @@ function updatePlayerSize() {
 		$('#movie_player > div.html5-video-container > div.html5-video-content').height(winHadjusted).width(winW);
 	}
 }
+
+$(window).resize(function () { updatePlayerSize(); });
+
 //---------------------------------------
 //This code adds css to the head so I can manipulate CSS classes reasonably well, rather than using inline styles
 //more discussion and original snippet at http://stackoverflow.com/questions/7125453/modifying-css-class-property-values-on-the-fly-with-javascript-jquery
@@ -117,7 +110,7 @@ function setStyle(cssText) {
     /* Optional */ window.customSheet = sheet;
     (document.head || document.getElementsByTagName('head')[0]).appendChild(sheet);
     return (setStyle = function(cssText, node) {
-        if(!node || node.parentNode !== sheet)
+        if (!node || node.parentNode !== sheet) 
             return sheet.appendChild(document.createTextNode(cssText));
         node.nodeValue = cssText;
         return node;
@@ -126,15 +119,15 @@ function setStyle(cssText) {
 
 //---------------------------------------
 //The actual resize function
-function resizePlayer () {
+function resizePlayer() {
 	//update window size
 	var progress;
 	
-	if (resizeButtonState === 0){
+	if (resizeButtonState === 0) {
 		//Make the progress bar stuff centered, a good enough way to solve the inabilty to scale the whole bar
 		//TODO Scale the whole bar, haha.  Problem is that it's being set with inline styles from a function and I can't
 		//quite navigate youtube's rather cryptic variables quite well enough to find where they grab the width value
-		setStyle('.ytp-progress-bar-container { width:854px;margin:auto;}',progress);
+		setStyle('.ytp-progress-bar-container { width:854px;margin:auto;}', progress);
         
 		$('#player-api').css("margin", 0);
 		$('#player').css("margin", 0);
@@ -165,9 +158,8 @@ function resizePlayer () {
 		//Switch the ytr-resizeButton button back
 		$('#ytr-resizeButton').css("background", "no-repeat url(" + ytrResizeButtonLg + ") 0px 1px");
 		//Remove resizeButtonState
-		resizeButtonState=0;
+		resizeButtonState = 0;
 		//Debug
 		//console.log("Button press with resizeButtonState=1, now =" + resizeButtonState);
 	}
 }
-
