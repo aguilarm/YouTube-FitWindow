@@ -12,7 +12,7 @@ To use, go to a youtube video (right now the extension only works on videos on y
 <br><br>
 <img src="media/buttonLocation.png">
 
-## ToDo
+##ToDo
 
 
 - Add settings page so user can turn on/off searchbar or make FitWin the default size

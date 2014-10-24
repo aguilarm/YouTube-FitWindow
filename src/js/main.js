@@ -2,7 +2,7 @@
 var ytrResizeButtonSm = chrome.extension.getURL('img/resizeButtonSm.png'),
 	ytrResizeButtonLg = chrome.extension.getURL('img/resizeButtonLg.png'),
 	ytrResizeButtonState = 0,
-    ytrSearchbarState = 1,
+    ytrSearchBarState = 1,
     resizeButtonState = 0,
     searchBarState = 1,
 	winH,
@@ -11,7 +11,7 @@ var ytrResizeButtonSm = chrome.extension.getURL('img/resizeButtonSm.png'),
 
 //---------------------------------------
 //Create the button and add click event
-function loadButton() {
+function loadResizeButton() {
     
     var ytrResizeButton = '<div class="ytp-button" id="ytrResizeButton" role="button" aria-label="youtubeResize" tabindex="6850"></div>';
     
@@ -21,23 +21,46 @@ function loadButton() {
 	$('#ytrResizeButton').click(resizePlayer);
 }
 
+function loadSearchBarButton() {
+        var exists = document.getElementById('ytrSearchBarButton');
+        console.log(exists);
+        if (exists) { return }
+        console.log('creating searchbarbutton');
+        var ytrSearchBarButtonSVG = chrome.extension.getURL('img/searchBarButton.svg');
+        var ytrSearchBarButton = '<div id="ytrSearchBarButton"><img src="' + ytrSearchBarButtonSVG + '"></div>';
+        $('#masthead-positioner-height-offset').after(ytrSearchBarButton);
+        $('#ytrSearchBarButton img').click(function () {
+            console.log('clicked!');
+            if (ytrSearchBarState === 1) {
+                document.getElementById('yt-masthead-container').style.display= "none";
+                document.getElementById('masthead-positioner').style.display= "none";
+                document.getElementById('masthead-positioner-height-offset').style.height = "0px";
+                document.getElementById('player').style.marginTop = "0px";
+                $('#ytrSearchBarButton img').addClass('ytrRotate');
+                ytrSearchBarState = 0;
+            } else {
+                $('#yt-masthead-container').css("display", "block");
+                $('#masthead-positioner').css('display', 'block');
+                $('#masthead-positioner-height-offset').css("height", "50px");
+                $('#player').css("marginTop", "10");
+                $('#ytrSearchBarButton img').removeClass('ytrRotate');
+                ytrSearchBarState = 1;
+            }
+        });
+}
+
 //----------------------------------------
 //Add the button if it does not exist
-function addButton() {
-	//check if the button is added, and if so end
-	if (ytrResizeButtonState === 1) {
-		return;
-	}
-	//if the button is not added, run loadButton and create it
-	if (ytrResizeButtonState === 0) {
-		loadButton();
-	}
+function addResizeButton() {
+	if (ytrResizeButtonState === 1) { return; }
+    loadResizeButton();
 }
 
 //----------------------------------------
 //this detects when a url changes without page reload
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	addButton();
+	addResizeButton();
+    loadSearchBarButton();
 	correctRelated();
 });
 
@@ -57,17 +80,21 @@ function correctRelated() {
 //--------------------------------------
 //If the button has been pressed and the user resizes their window, update video player size
 //TODO Not working too well after youtube update
-$(window).resize(function () {
+$(window).resize(updatePlayerSize());
+
+//---------------------------------------
+//Function to update player size to adjust for changes
+function updatePlayerSize() {
 	if (resizeButtonState === 1){
 		//update window size
 		$window = $(window);
 		winH = $window.height();
+        
 		winW = $window.width();
 		$('#player-api').height(winH-50).width(winW);
 		$('#movie_player > div.html5-video-container > div.html5-video-content').height(winH - 50).width(winW - 50);
 	}
-});
-
+}
 //---------------------------------------
 //This code adds css to the head so I can manipulate CSS classes reasonably well, rather than using inline styles
 //more discussion and original snippet at http://stackoverflow.com/questions/7125453/modifying-css-class-property-values-on-the-fly-with-javascript-jquery
@@ -91,12 +118,12 @@ function resizePlayer () {
 	var progress,
 		$window = $(window),
 		winH = $window.height(),
-		winW = $window.width(),
+		winW = $window.width();
 		//adjust for youtube header
-        if (ytrSearchbarState === 0) {
-		  winHhead = winH - 50;
+        if (ytrSearchBarState === 0) {
+		  winHhead = winH - 65;
         } else {
-            winHhead = winH;
+            winHhead = winH -15;
         }
 	
 	if (resizeButtonState === 0){
@@ -142,17 +169,3 @@ function resizePlayer () {
 	}
 }
 
-//------------------------
-//Hide the search bar on top on click
-document.getElementById('masthead-positioner')
-	.addEventListener('click', function () {
-        if (ytrSearchbarState === 1) {
-            this.style.display = "none";
-            document.getElementById('masthead-positioner-height-offset').style.display = "none";
-            document.getElementById('player').style.marginTop = "0";
-            ytrSearchbarState = 0;
-            console.log('creating button');
-            var ytrSearchbarButton = '<div id="ytrSearchbarButton"><div></div></div>';
-            $('#body').after(ytrSearchbarButton);
-        }
-});
