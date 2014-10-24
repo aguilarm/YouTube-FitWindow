@@ -1,4 +1,4 @@
-#ytResize {
+#ytrResizeButton {
 	display: block;
 	float: right;
 	background-size: auto;
@@ -6,7 +6,7 @@
 	height: 27px;
 }
 
-#ytResize:hover {
+#ytrResizeButton:hover {
 	background-position: 0px 2px !important;
 }
 
@@ -16,4 +16,21 @@
 
 #ytR .player-height {
 	height:900px
+}
+
+#ytrSearchbarButton {
+    position:fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 15px;
+    z-index: 999;
+}
+
+#ytrSearchbarButton div {
+    margin: auto;
+    width: 50px;
+    height: 15px;
+    display: block;
+    background-color: #fff;
 }

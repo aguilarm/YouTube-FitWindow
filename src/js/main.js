@@ -1,47 +1,50 @@
 //Set up variables
-//active is to track if the button has been pressed
-var active = 0,
-	smallIdle = chrome.extension.getURL('img/smallIdle.png'),
-	largeIdle = chrome.extension.getURL('img/largeIdle.png'),
-	button = '<div class="ytp-button" id="ytResize" role="button" aria-label="youtubeResize" tabindex="6850"></div>',
-	buttonOn = 0,
+var ytrResizeButtonSm = chrome.extension.getURL('img/resizeButtonSm.png'),
+	ytrResizeButtonLg = chrome.extension.getURL('img/resizeButtonLg.png'),
+	ytrResizeButtonState = 0,
+    ytrSearchbarState = 1,
+    resizeButtonState = 0,
+    searchBarState = 1,
 	winH,
 	winW,
 	$window;
 
-//----------------------------------------
-//this detects when a url changes without page reload
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	addButton();
-	correctRelated();
-});
+//---------------------------------------
+//Create the button and add click event
+function loadButton() {
+    
+    var ytrResizeButton = '<div class="ytp-button" id="ytrResizeButton" role="button" aria-label="youtubeResize" tabindex="6850"></div>';
+    
+	$('.ytp-button-fullscreen-enter').after(ytrResizeButton);
+	$('#ytrResizeButton').css("background", "no-repeat url(" + ytrResizeButtonLg + ") 0px 1px");
+	ytrResizeButtonState = 1;
+	$('#ytrResizeButton').click(resizePlayer);
+}
 
 //----------------------------------------
 //Add the button if it does not exist
-function addButton(){
+function addButton() {
 	//check if the button is added, and if so end
-	if (buttonOn === 1) {
+	if (ytrResizeButtonState === 1) {
 		return;
 	}
 	//if the button is not added, run loadButton and create it
-	if (buttonOn === 0){
+	if (ytrResizeButtonState === 0) {
 		loadButton();
 	}
 }
 
-//---------------------------------------
-//Create the button and add click event
-function loadButton () {
-	$('.ytp-button-fullscreen-enter').after(button);
-	$('#ytResize').css("background", "no-repeat url(" + largeIdle + ") 0px 1px");
-	buttonOn=1;
-	$('#ytResize').click(resizePlayer);
-}
+//----------------------------------------
+//this detects when a url changes without page reload
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	addButton();
+	correctRelated();
+});
 
 //-------------------------------------	
 //Since new videos are loaded without a full page reload, this is to stop the related videos column from breaking
-function correctRelated () {
-	if ($('#player').css("margin")=='0px'){
+function correctRelated() {
+	if ($('#player').css("margin") === '0px') {
 		$('#watch7-sidebar').attr("style", "margin-top:10px; top:0;position:absolute");
 		//Debug
 		//console.log("Trying to fix related videos");
@@ -54,8 +57,8 @@ function correctRelated () {
 //--------------------------------------
 //If the button has been pressed and the user resizes their window, update video player size
 //TODO Not working too well after youtube update
-$(window).resize(function(){
-	if (active === 1){
+$(window).resize(function () {
+	if (resizeButtonState === 1){
 		//update window size
 		$window = $(window);
 		winH = $window.height();
@@ -90,9 +93,13 @@ function resizePlayer () {
 		winH = $window.height(),
 		winW = $window.width(),
 		//adjust for youtube header
-		winHhead = winH - 50;
+        if (ytrSearchbarState === 0) {
+		  winHhead = winH - 50;
+        } else {
+            winHhead = winH;
+        }
 	
-	if (active === 0){
+	if (resizeButtonState === 0){
 		//Make the progress bar stuff centered, a good enough way to solve the inabilty to scale the whole bar
 		//TODO Scale the whole bar, haha.  Problem is that it's being set with inline styles from a function and I can't
 		//quite navigate youtube's rather cryptic variables quite well enough to find where they grab the width value
@@ -108,12 +115,12 @@ function resizePlayer () {
 		//Hide the Theatre Mode button
 		$('.ytp-size-toggle-small').hide();
 		$('.ytp-size-toggle-large').hide();
-		//Change ytResize button
-		$('#ytResize').css("background-image", "url(" + smallIdle + ")");
-		//Set active
-		active = 1;
+		//Change ytr-resizeButton button
+		$('#ytr-resizeButton').css("background-image", "url(" + ytrResizeButtonSm + ")");
+		//Set resizeButtonState
+		resizeButtonState = 1;
 		//Debug
-		//console.log("After button pressed and active is 0 found; " + active);
+		//console.log("After button pressed and resizeButtonState is 0 found; " + resizeButtonState);
 	} else {
 		//clear the setStyle styles
 		setStyle('', progress);
@@ -126,11 +133,26 @@ function resizePlayer () {
 		//Show the Theatre Mode button again
 		$('.ytp-size-toggle-small').show();
 		$('.ytp-size-toggle-large').show().delay(300);
-		//Switch the ytResize button back
-		$('#ytResize').css("background", "no-repeat url(" + largeIdle + ") 0px 1px");
-		//Remove active
-		active=0;
+		//Switch the ytr-resizeButton button back
+		$('#ytr-resizeButton').css("background", "no-repeat url(" + ytrResizeButtonLg + ") 0px 1px");
+		//Remove resizeButtonState
+		resizeButtonState=0;
 		//Debug
-		//console.log("Button press with active=1, now =" + active);
+		//console.log("Button press with resizeButtonState=1, now =" + resizeButtonState);
 	}
 }
+
+//------------------------
+//Hide the search bar on top on click
+document.getElementById('masthead-positioner')
+	.addEventListener('click', function () {
+        if (ytrSearchbarState === 1) {
+            this.style.display = "none";
+            document.getElementById('masthead-positioner-height-offset').style.display = "none";
+            document.getElementById('player').style.marginTop = "0";
+            ytrSearchbarState = 0;
+            console.log('creating button');
+            var ytrSearchbarButton = '<div id="ytrSearchbarButton"><div></div></div>';
+            $('#body').after(ytrSearchbarButton);
+        }
+});
