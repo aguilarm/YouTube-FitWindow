@@ -38,7 +38,7 @@ function loadSearchBarButton() {
             $('#yt-masthead-container').css("display", "block");
             $('#masthead-positioner').css('display', 'block');
             $('#masthead-positioner-height-offset').css("height", "50px");
-            $('#player').css("margin-top", "10");
+            $('#player').css("margin-top", "0");
             $('#ytrSearchBarButton img').removeClass('ytrRotate');
             ytrSearchBarState = 1;
             updatePlayerSize();
